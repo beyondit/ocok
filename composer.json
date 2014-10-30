@@ -1,0 +1,16 @@
+{
+    "name": "beyondit/ocok",
+    "description": "Commandline Utility for OpenCart",
+    "require": {
+        "symfony/console": "~2.5",
+        "ifsnop/mysqldump-php": "~1.4",
+        "monolog/monolog": "~1.11"
+    },
+    "license": "GPLv2",
+    "authors": [
+        {
+            "name": "Stefan Huber",
+            "email": "stefan.huber@beyondit.at"
+        }
+    ]
+}
