@@ -1,6 +1,9 @@
 <?php
 
-$pharFile = "ocok.phar";
+$composer     = json_decode(file_get_contents("../composer.json"),true);
+$ocok_version = $composer['version'];
+
+$pharFile = "ocok-" . $ocok_version . ".phar";
 $baseDir  = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR;
 
 if (file_exists($pharFile)) {

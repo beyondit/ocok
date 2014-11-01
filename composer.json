@@ -6,7 +6,8 @@
         "ifsnop/mysqldump-php": "~1.4",
         "monolog/monolog": "~1.11"
     },
-    "license": "GPLv2",
+    "version" : "0.1.0",
+    "license": "GPL-3.0+",
     "authors": [
         {
             "name": "Stefan Huber",
