@@ -1,6 +1,6 @@
 <?php
 
-$composer     = json_decode(file_get_contents("../composer.json"),true);
+$composer     = json_decode(file_get_contents(__DIR__ . "/../composer.json"),true);
 $ocok_version = $composer['version'];
 
 $pharFile = "ocok-" . $ocok_version . ".phar";

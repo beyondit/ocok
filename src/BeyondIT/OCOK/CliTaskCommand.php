@@ -25,7 +25,7 @@ class CliTaskCommand extends OCOKCommand {
     
     protected function execute(InputInterface $input, OutputInterface $output) {
         if (parent::execute($input, $output)) {
-                             
+                            
             if (!$input->getOption("catalog")) {
                 chdir('admin');  
             }
@@ -42,9 +42,10 @@ class CliTaskCommand extends OCOKCommand {
             }
             
             ob_start();
-            include "index.php";      
+            require_once $this->getOCDirectory() . DIRECTORY_SEPARATOR . "index.php";      
             ob_end_clean();
-                        
+                    
+            
             $logger = new Logger("ocok");
             
             $registry->set('cli',array(
@@ -53,8 +54,7 @@ class CliTaskCommand extends OCOKCommand {
             
             $controller = new \Front($registry);
             $controller->dispatch(new \Action($input->getArgument("route")), new \Action('error/not_found'));
-
-            // $response->output();
+            
         }
     }    
 }

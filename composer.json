@@ -6,6 +6,11 @@
         "ifsnop/mysqldump-php": "~1.4",
         "monolog/monolog": "~1.11"
     },
+    "autoload": {
+      "psr-4": {
+        "BeyondIT\\" : "src/BeyondIT/"
+      }
+    },
     "version" : "0.1.0",
     "license": "GPL-3.0+",
     "authors": [

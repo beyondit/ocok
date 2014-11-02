@@ -1,22 +1,16 @@
 <?php
 
 // add namespace to Composer autoloader
-$loader = require __DIR__.'/vendor/autoload.php';
-$loader->add('BeyondIT\\OCOK',__DIR__.'/src/');
-
-class DummyConfig {
-    public function get($name) {
-        return false;
-    }
-}
-$config = new DummyConfig();
+require_once __DIR__.'/vendor/autoload.php';
 
 use BeyondIT\OCOK\PHPDocCommand;
 use BeyondIT\OCOK\CliTaskCommand;
 use BeyondIT\OCOK\InfoCommand;
 use BeyondIT\OCOK\BackupCommand;
-
+use BeyondIT\OCOK\DummyConfig;
 use Symfony\Component\Console\Application;
+
+$config = new DummyConfig();
 
 $application = new Application();
 

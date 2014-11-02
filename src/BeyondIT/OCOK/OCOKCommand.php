@@ -56,14 +56,14 @@ abstract class OCOKCommand extends Command {
     public function checkOC() {
         $execDir = getcwd();
         $output = true;
-        
+                
         // check if OC is present
         foreach ($this->files as $file) {
             if (!is_file($execDir ."/". $file)) {
                 $output = false;
             }
         }
-        
+                
         // check the OC Version
         if ($output) {
             $handle = fopen($execDir ."/". $this->files['catalog/index'], "r");
@@ -81,7 +81,7 @@ abstract class OCOKCommand extends Command {
                 $output = false;
             } 
         }
-        
+                
         return $output;
     }
     
@@ -89,6 +89,7 @@ abstract class OCOKCommand extends Command {
         $result = true;
                 
         if (!$this->checkOC()) {
+            echo "GOES HERE ???? : " . $this->checkOC();
             $result = false;
             $output->writeln("<error>ERROR: No Opencart installation found!</error>");
         } else if (!$this->isVersionSupported()) {
