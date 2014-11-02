@@ -89,7 +89,6 @@ abstract class OCOKCommand extends Command {
         $result = true;
                 
         if (!$this->checkOC()) {
-            echo "GOES HERE ???? : " . $this->checkOC();
             $result = false;
             $output->writeln("<error>ERROR: No Opencart installation found!</error>");
         } else if (!$this->isVersionSupported()) {
