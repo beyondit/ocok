@@ -11,12 +11,15 @@
         "BeyondIT\\" : "src/BeyondIT/"
       }
     },
-    "version" : "0.1.1",
+    "version": "0.1.1",
     "license": "GPL-3.0+",
     "authors": [
         {
             "name": "Stefan Huber",
             "email": "stefan.huber@beyondit.at"
         }
-    ]
+    ],
+    "require-dev": {
+        "codegyre/robo": "~0.4"
+    }
 }

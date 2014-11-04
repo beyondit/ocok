@@ -1,7 +1,18 @@
+#!/usr/bin/env php
 <?php
 
-// add namespace to Composer autoloader
-require_once __DIR__.'/vendor/autoload.php';
+if(strpos(basename(__FILE__), 'phar')){
+    require_once 'phar://ocok.phar/vendor/autoload.php';
+}
+else{
+    if (file_exists(__DIR__.'/vendor/autoload.php')) {
+        require_once __DIR__.'/vendor/autoload.php';
+    } elseif (file_exists(__DIR__.'/../../autoload.php')) {
+        require_once __DIR__ . '/../../autoload.php';
+    } else {
+        require_once 'phar://ocok.phar/vendor/autoload.php';
+    }
+}
 
 use BeyondIT\OCOK\PHPDocCommand;
 use BeyondIT\OCOK\CliTaskCommand;
