@@ -11,7 +11,7 @@
         "BeyondIT\\" : "src/BeyondIT/"
       }
     },
-    "version": "0.1.1",
+    "version": "0.1.2",
     "license": "GPL-3.0+",
     "authors": [
         {
@@ -19,6 +19,7 @@
             "email": "stefan.huber@beyondit.at"
         }
     ],
+    "bin": ["ocok"],
     "require-dev": {
         "codegyre/robo": "~0.4"
     }
