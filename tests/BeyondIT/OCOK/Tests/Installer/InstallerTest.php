@@ -25,7 +25,7 @@ class InstallerTest extends \PHPUnit_Framework_TestCase {
         $this->options = array(
             'db_hostname' => 'localhost' ,
             'db_username' => 'root' ,
-            'db_password' => 'root' ,
+            'db_password' => '' ,
             'db_database' => 'ocok_opencart_test' ,
             'db_prefix'   => '',
             'db_driver'   => 'mysqli',
