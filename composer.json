@@ -11,6 +11,9 @@
         "BeyondIT\\" : "src/BeyondIT/"
       }
     },
+    "autoload-dev": {
+        "psr-4": { "BeyondIT\\OCOK\\Tests\\": "tests/BeyondIT/OCOK/Tests/" }
+    },
     "version": "0.1.2",
     "license": "GPL-3.0+",
     "authors": [
@@ -20,7 +23,31 @@
         }
     ],
     "bin": ["ocok"],
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "opencart/opencart",
+                "type": "opencart-core",
+                "version": "2.0.1.1",
+                "dist": {
+                    "url": "https://github.com/opencart/opencart/archive/2.0.1.1.zip",
+                    "type": "zip"
+                },
+                "source": {
+                    "url": "https://github.com/opencart/opencart",
+                    "type": "git",
+                    "reference": "2.0.1.1"
+                }
+            }
+        }
+    ],
     "require-dev": {
-        "codegyre/robo": "~0.4"
+        "etki/opencart-core-installer": "~0.1",
+        "opencart/opencart": "2.0.1.1",
+        "phpunit/phpunit": "4.4.*"
+    },
+    "extra": {
+        "opencart-install-dir": "vendor/opencart"
     }
 }

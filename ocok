@@ -17,8 +17,9 @@ else{
 use BeyondIT\OCOK\PHPDocCommand;
 use BeyondIT\OCOK\CliTaskCommand;
 use BeyondIT\OCOK\InfoCommand;
+use BeyondIT\OCOK\InstallCommand;
 use BeyondIT\OCOK\BackupCommand;
-use BeyondIT\OCOK\DummyConfig;
+use BeyondIT\OCOK\Helpers\DummyConfig;
 use Symfony\Component\Console\Application;
 
 $config = new DummyConfig();
@@ -29,6 +30,7 @@ $application->setName("OpenCart OK Command Line Utilities");
 
 $application->add(new PHPDocCommand);
 $application->add(new CliTaskCommand);
+$application->add(new InstallCommand);
 $application->add(new BackupCommand);
 $application->add(new InfoCommand);
 

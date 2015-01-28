@@ -44,14 +44,9 @@ class CliTaskCommand extends OCOKCommand {
             ob_start();
             require_once $this->getOCDirectory() . DIRECTORY_SEPARATOR . "index.php";      
             ob_end_clean();
-                    
-            
-            $logger = new Logger("ocok");
-            
-            $registry->set('cli',array(
-                'logger' => $logger)
-            );
-            
+
+            $registry->set('cli',true);
+
             $controller = new \Front($registry);
             $controller->dispatch(new \Action($input->getArgument("route")), new \Action('error/not_found'));
             

@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class OCOKCommand extends Command {
-    private $VERSION_HACK = '';
+    protected $version = '';
     /*
      * Method should return a String array of supported Version numbers
      * e.g. ['1.5','2'] 
@@ -15,12 +15,26 @@ abstract class OCOKCommand extends Command {
      * return array
      */
     abstract public function supportedVersions();
-    
+
+    /**
+     *  Installed OpenCart File Structure check
+     */
     protected $files = array(
         'catalog/index' => 'index.php' ,
         'admin/index'   => 'admin/index.php',
         'catalog/config'=> 'config.php' ,
         'admin/config'  => 'admin/config.php'
+    );
+
+    /**
+     *  Uninstalled OpenCart File Structure check
+     */
+    protected $uninstalled_files = array(
+        'catalog/index' => 'index.php' ,
+        'admin/index'   => 'admin/index.php',
+        'install/cli'   => 'install/cli_install.php',
+        'install/index' => 'install/index.php',
+        'install/sql'   => 'install/opencart.sql'
     );
     
     // GETTERS
@@ -30,7 +44,11 @@ abstract class OCOKCommand extends Command {
     }
     
     public function getVersion() {
-        return $this->VERSION_HACK;
+        return $this->version;
+    }
+
+    public function setVersion($version) {
+        $this->version = $version;
     }
     
     // VERSION SECTION
@@ -51,13 +69,51 @@ abstract class OCOKCommand extends Command {
             
     public function loadOCConfig() {
         require_once 'config.php';
-    }    
-       
+    }
+
+    public function loadVersion($execDir) {
+        $output = false;
+        
+        $handle = fopen($execDir ."/". $this->files['catalog/index'], "r");
+        if ($handle) {
+            while (($line = fgets($handle)) !== false) {
+                $pos = strpos($line, "VERSION");
+                if ($pos > 0) {
+                    // eval(substr_replace($line,"_HACK",$pos+7,0));
+                    preg_match("/[0-9]?\.[0-9]{1,2}\.[0-9]{1,2}\.\w{1,3}/i", $line,$match);
+                    $output = $match[0];
+                    break;
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    public function checkUninstalledOC() {
+        $execDir = $this->getOCDirectory();
+        $output = true;
+
+        // check if installed OC is present
+        foreach ($this->uninstalled_files as $file) {
+            if (!is_file($execDir ."/". $file)) {
+                $output = false;
+            }
+        }
+
+        // check the OC Version
+        if ($output && $version = $this->loadVersion($execDir)) {
+            $this->setVersion($version);
+        }
+
+        return $output;
+    }
+
     public function checkOC() {
-        $execDir = getcwd();
+        $execDir = $this->getOCDirectory();
         $output = true;
                 
-        // check if OC is present
+        // check if installed OC is present
         foreach ($this->files as $file) {
             if (!is_file($execDir ."/". $file)) {
                 $output = false;
@@ -65,21 +121,8 @@ abstract class OCOKCommand extends Command {
         }
                 
         // check the OC Version
-        if ($output) {
-            $handle = fopen($execDir ."/". $this->files['catalog/index'], "r");
-            if ($handle) {
-                while (($line = fgets($handle)) !== false) {    
-                    $pos = strpos($line, "VERSION");
-                    if ($pos > 0) {
-                        // eval(substr_replace($line,"_HACK",$pos+7,0));
-                        preg_match("/[0-9]?\.[0-9]{1,2}\.[0-9]{1,2}\.\w{1,3}/i", $line,$match);
-                        $this->VERSION_HACK = $match[0];
-                        break;
-                    }
-                }
-            } else {
-                $output = false;
-            } 
+        if ($output && $version = $this->loadVersion($execDir)) {
+            $this->setVersion($version);
         }
                 
         return $output;
