@@ -2,6 +2,7 @@
 
 namespace BeyondIT\OCOK;
 
+use BeyondIT\OCOK\Helpers\FileSystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,31 +25,10 @@ class BackupCommand extends OCOKCommand {
                 ->addOption("database", "d", InputOption::VALUE_NONE, "Add database to backup");
     }
 
-    protected function rmdir($dir) {
-        $files = $this->getFilesRecursively($dir);
-
-        foreach ($files as $fileinfo) {
-            $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
-            $todo($fileinfo->getRealPath());
-        }
-
-        rmdir($dir);
-    }
-
-    protected function getFilesRecursively($dir) {
-        return new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST
-        );
-    }
-
-    protected function isImage($file) {
-        $allowedTypes = array(IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF);
-        $detectedType = @exif_imagetype($file);
-        return in_array($detectedType, $allowedTypes);
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output) {
         if (parent::execute($input, $output)) {
+            $file_system_helper = new FileSystem();
+
             $this->loadOCConfig();
             $this->backup_folder = $this->getOCDirectory() . DIRECTORY_SEPARATOR . ".backup_tmp/";
 
@@ -56,7 +36,7 @@ class BackupCommand extends OCOKCommand {
             if ($za->open("ocok_backup_" . date("Y_m_d_H_i") . ".zip", \ZipArchive::OVERWRITE)) {
 
                 if (is_dir($this->backup_folder)) {
-                    $this->rmdir($this->backup_folder);
+                    $$file_system_helper->rmdir($this->backup_folder);
                 }
 
                 mkdir($this->backup_folder);
@@ -69,9 +49,9 @@ class BackupCommand extends OCOKCommand {
                 }
 
                 if ($input->getOption("images")) {
-                    $files = $this->getFilesRecursively($image_path);
+                    $files = $file_system_helper->getFilesRecursively($image_path);
                     foreach ($files as $file) {
-                        if ($file->isFile() && $file->isReadable() && $this->isImage($file->getPathname())) {
+                        if ($file->isFile() && $file->isReadable() && $file_system_helper->isImage($file->getPathname())) {
 
                             // remove basefolder prefix from path
                             if (substr($file->getPathname(), 0, strlen($this->getOCDirectory())) == $this->getOCDirectory()) {
@@ -97,7 +77,7 @@ class BackupCommand extends OCOKCommand {
                 }
                 
                 $za->close();
-                $this->rmdir($this->backup_folder);
+                $file_system_helper->rmdir($this->backup_folder);
             }
         }
     }

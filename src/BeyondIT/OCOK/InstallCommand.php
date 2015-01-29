@@ -2,6 +2,8 @@
 
 namespace BeyondIT\OCOK;
 
+use BeyondIT\OCOK\Helpers\Downloader;
+use BeyondIT\OCOK\Helpers\FileSystem;
 use BeyondIT\OCOK\Helpers\Installer;
 use BeyondIT\OCOK\OCOKCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,39 +20,27 @@ class InstallCommand extends OCOKCommand {
     protected function configure() {
         $this->setName("install")
             ->setDescription("Install OpenCart")
+            ->addOption("version","V",InputOption::VALUE_OPTIONAL,"Download OpenCart Version (e.g.: 2.0.1.1)","2.0.1.1")
             ->addOption("db_driver","d",InputOption::VALUE_OPTIONAL,"Database Drive, defaults to mysqli","mysqli")
             ->addOption("db_hostname","o",InputOption::VALUE_OPTIONAL,"Database Hostname, defaults to localhost","localhost")
             ->addOption("db_username","u",InputOption::VALUE_REQUIRED,"Database Username")
             ->addOption("db_password","p",InputOption::VALUE_REQUIRED,"Database Password")
             ->addOption("db_database","b",InputOption::VALUE_OPTIONAL,"Database Name, defaults to opencart","opencart")
-            ->addOption("db_prefix","x",InputOption::VALUE_OPTIONAL,"Database Prefix, empty as default","")
-            ->addOption("username","U",InputOption::VALUE_OPTIONAL,"Username","admin")
-            ->addOption("password","P",InputOption::VALUE_REQUIRED,"Password")
-            ->addOption("email","e",InputOption::VALUE_REQUIRED,"Email")
-            ->addOption("http_server","s",InputOption::VALUE_OPTIONAL,"HTTP Server, defaults to http://localhost/opencart/","http://localhost/opencart/")
-            ->addArgument("directory", InputArgument::OPTIONAL, "Set the directory to install OpenCart","./");
-    }
-
-    /*
-     * http://stackoverflow.com/questions/7497733/how-can-use-php-to-check-if-a-directory-is-empty
-     */
-    public function isEmptyDirectory($dir) {
-        if (!is_readable($dir)) return null;
-        $handle = opendir($dir);
-        while (false !== ($entry = readdir($handle))) {
-            if ($entry != "." && $entry != "..") {
-                return false;
-            }
-        }
-        return true;
+            ->addOption("db_prefix","x",InputOption::VALUE_OPTIONAL,"Database Prefix, oc_ as default","oc_")
+            ->addOption("username","U",InputOption::VALUE_OPTIONAL,"OpenCart Admin Username","admin")
+            ->addOption("password","P",InputOption::VALUE_REQUIRED,"OpenCart Admin Password")
+            ->addOption("email","e",InputOption::VALUE_REQUIRED,"OpenCart Admin Email")
+            ->addOption("http_server","s",InputOption::VALUE_OPTIONAL,"HTTP Server, defaults to http://localhost/opencart/","http://localhost/opencart/");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $installer = new Installer();
+        $fsh = new FileSystem();
 
         if ($input->hasArgument("directory") && $input->getArgument("directory")) {
             chdir($input->getArgument("directory"));
         }
+
+        $installer = new Installer(getcwd() . DIRECTORY_SEPARATOR);
 
         $options = array();
         $options['db_driver']   = $input->getOption("db_driver");
@@ -90,41 +80,28 @@ class InstallCommand extends OCOKCommand {
         }
 
         $dir = getcwd();
-        if ($this->isEmptyDirectory($dir)) {
-            // TODO: download first
-            $output->writeln("<error>Downloading OpenCart not yet supported!</error>");
-            return;
+        if ($fsh->isEmptyDirectory($dir)) {
+            $version = "2.0.1.1";
+            if ($input->getOption("version")) {
+                $version = $input->getOption("version");
+            }
+
+            $downloader = new Downloader($dir);
+            $downloader->process($version);
+            $output->writeln("<info>OpenCart Version $version downloaded.</info>");
         } else if ($this->checkUninstalledOC()) { // OC present
-            $installer->init(getcwd() . DIRECTORY_SEPARATOR);
+            $version = $this->getVersion();
+            $output->writeln("<info>OpenCart Version $version found.</info>");
         } else {
-            $output->writeln("<error>No Empty and no OC Directory found</error>");
+            $output->writeln("<error>No Empty and no OC Directory found here</error>");
             return;
         }
 
-        for ($i = 1 ; $i <= 4 ; $i++) {
-            switch ($i) {
-                case $i === 1:
-                    $step = $installer->checkRequirements();
-                    break;
-                case $i === 2:
-                    $step = $installer->setupDatabase($options);
-                    break;
-                case $i === 3:
-                    $step = $installer->writeConfigFiles($options);
-                    break;
-                case $i === 4:
-                    $step = $installer->setDirectoryPermissions();
-                    break;
-                default:
-                    break;
-            }
-
-            if ($step['check']) {
-                $output->writeln("<info>".$step['message']."</info>");
-            } else {
-                $output->writeln("<error>".$step['message']."</error>");
-                return;
-            }
+        try {
+            $installer->install($options);
+        } catch(\Exception $e) {
+            $output->writeln("<error>Error: ".$e->getMessage()."</error>");
+            return;
         }
 
         $output->writeln("<info>OpenCart was successfully installed!</info>");
