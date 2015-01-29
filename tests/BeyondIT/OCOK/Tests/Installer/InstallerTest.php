@@ -19,15 +19,14 @@ class InstallerTest extends \PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->oc_dir = getcwd() . "/vendor/opencart/";
 
-        $this->installer = new Installer();
-        $this->installer->init($this->oc_dir);
+        $this->installer = new Installer($this->oc_dir);
 
         $this->options = array(
             'db_hostname' => 'localhost' ,
             'db_username' => 'root' ,
-            'db_password' => '' ,
+            'db_password' => 'root' ,
             'db_database' => 'ocok_opencart_test' ,
-            'db_prefix'   => '',
+            'db_prefix'   => 'oc_',
             'db_driver'   => 'mysqli',
             'email'       => 'test@ocok.com' ,
             'username'    => 'admin' ,
@@ -35,36 +34,24 @@ class InstallerTest extends \PHPUnit_Framework_TestCase {
             'http_server' => 'http://localhost/opencart/'
         );
 
+        $this->installer->removeDatabase($this->options);
     }
 
-    public function testSettingUpTheDatabase() {
+    public function testInstallingOpenCart() {
         $options = $this->options;
-        $output = $this->installer->setupDatabase($options);
+        $output = $this->installer->install($options);
 
-        if (!$output['check']) {
-            echo $output['message'];
-        }
+        $this->assertEquals("SUCCESS! Opencart successfully installed on your server",$output[0]);
+        $this->assertEquals("Store link: " . $options['http_server'],$output[1]);
+        $this->assertEquals("Admin link: " . $options['http_server'] . "admin/",$output[2]);
 
-        $this->assertTrue($output['check']);
-
-        $this->installer->removeDatabase($options);
-    }
-
-    public function testWritingConfigFiles() {
-        $options = $this->options;
-        $output = $this->installer->writeConfigFiles($options);
-
-        if (!$output['check']) {
-            echo "ERROR: " . $output['message'];
-        }
-
-        $this->assertTrue($output['check']);
         $this->assertTrue(file_exists($this->oc_dir . "config.php"));
         $this->assertTrue(file_exists($this->oc_dir . "admin" . DIRECTORY_SEPARATOR . "config.php"));
 
         $this->installer->removeConfigFiles($options);
         $this->assertFalse(file_exists($this->oc_dir . "config.php"));
         $this->assertFalse(file_exists($this->oc_dir . "admin" . DIRECTORY_SEPARATOR . "config.php"));
-    }
 
+        $this->installer->removeDatabase($options);
+    }
 }

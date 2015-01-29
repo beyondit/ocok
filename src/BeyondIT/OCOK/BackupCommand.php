@@ -53,7 +53,7 @@ class BackupCommand extends OCOKCommand {
             $this->backup_folder = $this->getOCDirectory() . DIRECTORY_SEPARATOR . ".backup_tmp/";
 
             $za = new \ZipArchive();
-            if ($za->open("ocok_backup_" . date("Y_m_d_i_s") . ".zip", \ZipArchive::OVERWRITE)) {
+            if ($za->open("ocok_backup_" . date("Y_m_d_H_i") . ".zip", \ZipArchive::OVERWRITE)) {
 
                 if (is_dir($this->backup_folder)) {
                     $this->rmdir($this->backup_folder);

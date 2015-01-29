@@ -7,51 +7,39 @@ class Installer {
 
     protected $registry;
     protected $loader;
-    protected $oc_dir;
 
-    public function init($oc_dir) {
-        $this->oc_dir = $oc_dir;
-        $cli_file = $oc_dir . "install" . DIRECTORY_SEPARATOR . "cli_install.php";
+    protected $dir_opencart;
 
-        if (file($cli_file)) {
-            try {
-                ob_start();
-                require_once($cli_file);
-                ob_end_clean();
-            } catch (\Exception $error) {
-                // Silence all Exceptions from cli_install.php
-            }
-
-            $this->registry = new \Registry();
-            $this->loader = new \Loader($this->registry);
-            $this->registry->set('load', $this->loader);
-        }
+    function __construct($dir_opencart) {
+        $this->dir_opencart = $dir_opencart;
     }
 
-    public function checkRequirements() {
-        $check = \check_requirements();
+    /**
+     * @params options array options array for cli installer
+     * @return array output of cli exec
+     *
+     */
+    public function install($options) {
+        chdir($this->dir_opencart . "install");
 
-        return array(
-            'check'   => $check[0] ,
-            'message' => $check[0] ? "Requirements passed" : ("Check failed: " . $check[1])
-        );
-    }
+        $mysqli = new \mysqli($options['db_hostname'],$options['db_username'],$options['db_password']);
+        $mysqli->query("create database if not exists " . $options['db_database']);
+        $mysqli->close();
 
-    public function setDirectoryPermissions() {
-        $check = true;
-        $message = "Successfully set directory permissions";
+        $exec =  "php cli_install.php install";
+        $exec .= " --http_server " . $options['http_server'];
+        $exec .= " --db_hostname " . $options['db_hostname'];
+        $exec .= " --db_username " . $options['db_username'];
+        $exec .= " --db_password " . $options['db_password'];
+        $exec .= " --db_database " . $options['db_database'];
+        $exec .= " --db_prefix "   . $options['db_prefix'];
+        $exec .= " --db_driver "   . $options['db_driver'];
+        $exec .= " --email "       . $options['email'];
+        $exec .= " --username "    . $options['username'];
+        $exec .= " --password "    . $options['password'];
 
-        try {
-            \dir_permissions();
-        } catch(\Exception $error) {
-            $check = false;
-            $message = $error->getMessage();
-        }
-
-        return array(
-            'check'   => $check ,
-            'message' => $message
-        );
+        exec($exec,$output);
+        return $output;
     }
 
     public function removeDatabase($options) {
@@ -62,38 +50,9 @@ class Installer {
         $mysqli->close();
     }
 
-    public function setupDatabase($options) {
-        $check = true;
-        $message = "Successfully setup database";
-
-        if (!defined("HTTP_OPENCART")) {
-            define('HTTP_OPENCART', $options['http_server']);
-        }
-
-        try {
-            $this->removeDatabase($options);
-
-            $mysqli = new \mysqli($options['db_hostname'],$options['db_username'],$options['db_password']);
-            $mysqli->query("create database if not exists " . $options['db_database']);
-            $mysqli->close();
-
-            $this->loader->model('install');
-            $model = $this->registry->get('model_install');
-            $model->database($options);
-        } catch(\Exception $error) {
-            $check = false;
-            $message = $error->getMessage();
-        }
-
-        return array(
-            'check'   => $check ,
-            'message' => $message
-        );
-    }
-
     public function removeConfigFiles() {
-        if ($this->oc_dir) {
-            $directory = $this->oc_dir;
+        if ($this->dir_opencart) {
+            $directory = $this->dir_opencart;
         } else {
             $directory = getcwd();
         }
@@ -108,22 +67,4 @@ class Installer {
             @unlink($admin_config);
         }
     }
-
-    public function writeConfigFiles($options) {
-        $check = true;
-        $message = "Successfully wrote config files";
-
-        try {
-            \write_config_files($options);
-        } catch(\Exception $error) {
-            $check = false;
-            $message = $error->getMessage();
-        }
-
-        return array(
-            'check'   => $check ,
-            'message' => $message
-        );
-    }
-
 }
