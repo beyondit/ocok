@@ -3,8 +3,7 @@
     "description": "Commandline Utility for OpenCart",
     "require": {
         "symfony/console": "~2.5",
-        "ifsnop/mysqldump-php": "~1.4",
-        "monolog/monolog": "~1.11"
+        "ifsnop/mysqldump-php": "~1.4"
     },
     "autoload": {
       "psr-4": {
