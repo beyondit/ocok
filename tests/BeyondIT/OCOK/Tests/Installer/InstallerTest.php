@@ -17,7 +17,7 @@ class InstallerTest extends \PHPUnit_Framework_TestCase {
     protected $oc_dir;
 
     public function setUp() {
-        $this->oc_dir = getcwd() . "/vendor/opencart/";
+        $this->oc_dir = getcwd() . "/vendor/opencart";
 
         $this->installer = new Installer($this->oc_dir);
 
@@ -45,12 +45,12 @@ class InstallerTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals("Store link: " . $options['http_server'],$output[1]);
         $this->assertEquals("Admin link: " . $options['http_server'] . "admin/",$output[2]);
 
-        $this->assertTrue(file_exists($this->oc_dir . "config.php"));
-        $this->assertTrue(file_exists($this->oc_dir . "admin" . DIRECTORY_SEPARATOR . "config.php"));
+        $this->assertTrue(file_exists($this->oc_dir . DIRECTORY_SEPARATOR . "config.php"));
+        $this->assertTrue(file_exists($this->oc_dir . DIRECTORY_SEPARATOR . "admin" . DIRECTORY_SEPARATOR . "config.php"));
 
         $this->installer->removeConfigFiles($options);
-        $this->assertFalse(file_exists($this->oc_dir . "config.php"));
-        $this->assertFalse(file_exists($this->oc_dir . "admin" . DIRECTORY_SEPARATOR . "config.php"));
+        $this->assertFalse(file_exists($this->oc_dir . DIRECTORY_SEPARATOR . "config.php"));
+        $this->assertFalse(file_exists($this->oc_dir . DIRECTORY_SEPARATOR . "admin" . DIRECTORY_SEPARATOR . "config.php"));
 
         $this->installer->removeDatabase($options);
     }

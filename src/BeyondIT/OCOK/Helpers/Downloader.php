@@ -18,8 +18,8 @@ class Downloader {
     function __construct($dir) {
         $this->file_system_helper = new FileSystem();
         $this->dir = $dir;
-        $this->tmp = getcwd() . DIRECTORY_SEPARATOR . ".tmp";
-        $this->oc_zip = getcwd() .DIRECTORY_SEPARATOR . "oc.zip";
+        $this->tmp = dirname(getcwd()) . DIRECTORY_SEPARATOR . ".tmp";
+        $this->oc_zip = dirname(getcwd()) .DIRECTORY_SEPARATOR . "oc.zip";
 
         if (!is_dir($dir)) {
             mkdir($dir);
@@ -70,7 +70,7 @@ class Downloader {
             }
 
             $za->extractTo($this->tmp);
-            return rename($this->tmp."/opencart-2.0.1.1/upload",$this->dir);
+            return rename($this->tmp.DIRECTORY_SEPARATOR.$base,$this->dir);
         }
 
         return false;

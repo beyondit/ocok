@@ -20,7 +20,7 @@ class InstallCommand extends OCOKCommand {
     protected function configure() {
         $this->setName("install")
             ->setDescription("Install OpenCart")
-            ->addOption("version","V",InputOption::VALUE_OPTIONAL,"Download OpenCart Version (e.g.: 2.0.1.1)","2.0.1.1")
+            ->addOption("download_version","O",InputOption::VALUE_OPTIONAL,"Download OpenCart Version (e.g.: 2.0.1.1)","2.0.1.1")
             ->addOption("db_driver","d",InputOption::VALUE_OPTIONAL,"Database Drive, defaults to mysqli","mysqli")
             ->addOption("db_hostname","o",InputOption::VALUE_OPTIONAL,"Database Hostname, defaults to localhost","localhost")
             ->addOption("db_username","u",InputOption::VALUE_REQUIRED,"Database Username")
@@ -35,12 +35,9 @@ class InstallCommand extends OCOKCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         $fsh = new FileSystem();
+        $dir = getcwd();
 
-        if ($input->hasArgument("directory") && $input->getArgument("directory")) {
-            chdir($input->getArgument("directory"));
-        }
-
-        $installer = new Installer(getcwd() . DIRECTORY_SEPARATOR);
+        $installer = new Installer($dir . DIRECTORY_SEPARATOR);
 
         $options = array();
         $options['db_driver']   = $input->getOption("db_driver");
@@ -79,7 +76,6 @@ class InstallCommand extends OCOKCommand {
             return;
         }
 
-        $dir = getcwd();
         if ($fsh->isEmptyDirectory($dir)) {
             $version = "2.0.1.1";
             if ($input->getOption("version")) {
@@ -99,6 +95,7 @@ class InstallCommand extends OCOKCommand {
 
         try {
             $installer->install($options);
+            $installer->removeInstallationFiles();
         } catch(\Exception $e) {
             $output->writeln("<error>Error: ".$e->getMessage()."</error>");
             return;

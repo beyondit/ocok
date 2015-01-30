@@ -30,7 +30,7 @@ class DownloaderTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertFileExists($this->dir . DIRECTORY_SEPARATOR . "index.php");
         $this->assertFileExists($this->dir . DIRECTORY_SEPARATOR . "admin" . DIRECTORY_SEPARATOR . "index.php");
-        $this->assertFileNotExists(getcwd() . DIRECTORY_SEPARATOR . "oc.zip");
+        $this->assertFileNotExists(dirname(getcwd()) . DIRECTORY_SEPARATOR . "oc.zip");
     }
 
 }

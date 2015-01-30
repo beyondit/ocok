@@ -74,7 +74,7 @@ abstract class OCOKCommand extends Command {
     public function loadVersion($execDir) {
         $output = false;
         
-        $handle = fopen($execDir ."/". $this->files['catalog/index'], "r");
+        $handle = fopen($execDir .DIRECTORY_SEPARATOR. $this->files['catalog/index'], "r");
         if ($handle) {
             while (($line = fgets($handle)) !== false) {
                 $pos = strpos($line, "VERSION");
@@ -96,7 +96,7 @@ abstract class OCOKCommand extends Command {
 
         // check if installed OC is present
         foreach ($this->uninstalled_files as $file) {
-            if (!is_file($execDir ."/". $file)) {
+            if (!is_file($execDir . DIRECTORY_SEPARATOR . $file)) {
                 $output = false;
             }
         }
@@ -115,7 +115,7 @@ abstract class OCOKCommand extends Command {
                 
         // check if installed OC is present
         foreach ($this->files as $file) {
-            if (!is_file($execDir ."/". $file)) {
+            if (!is_file($execDir . DIRECTORY_SEPARATOR . $file)) {
                 $output = false;
             }
         }

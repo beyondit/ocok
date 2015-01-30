@@ -20,11 +20,10 @@ class Installer {
      *
      */
     public function install($options) {
-        chdir($this->dir_opencart . "install");
+        chdir($this->dir_opencart . DIRECTORY_SEPARATOR . "install");
 
-        $mysqli = new \mysqli($options['db_hostname'],$options['db_username'],$options['db_password']);
-        $mysqli->query("create database if not exists " . $options['db_database']);
-        $mysqli->close();
+        $this->removeDatabase($options);
+        $this->createDatabase($options);
 
         $exec =  "php cli_install.php install";
         $exec .= " --http_server " . $options['http_server'];
@@ -40,6 +39,30 @@ class Installer {
 
         exec($exec,$output);
         return $output;
+    }
+
+    public function removeInstallationFiles() {
+        chdir($this->dir_opencart);
+
+        if (is_file($this->dir_opencart . DIRECTORY_SEPARATOR . "config-dist.php")) {
+            unlink($this->dir_opencart . DIRECTORY_SEPARATOR . "config-dist.php");
+        }
+
+        if (is_file($this->dir_opencart . DIRECTORY_SEPARATOR . "admin" . DIRECTORY_SEPARATOR . "config-dist.php")) {
+            unlink($this->dir_opencart . DIRECTORY_SEPARATOR . "admin" . DIRECTORY_SEPARATOR . "config-dist.php");
+        }
+
+        // remove install folder
+        if (is_dir($this->dir_opencart . DIRECTORY_SEPARATOR . "install")) {
+            $fsh = new FileSystem();
+            $fsh->rmdir($this->dir_opencart . DIRECTORY_SEPARATOR . "install");
+        }
+    }
+
+    public function createDatabase($options) {
+        $mysqli = new \mysqli($options['db_hostname'],$options['db_username'],$options['db_password']);
+        $mysqli->query("create database if not exists " . $options['db_database']);
+        $mysqli->close();
     }
 
     public function removeDatabase($options) {

@@ -34,7 +34,7 @@ class BackupCommandTest extends \PHPUnit_Framework_TestCase {
         $this->application = new Application();
         $this->application->add(new BackupCommand());
 
-        $this->execDir = getcwd() . "/vendor/opencart/";
+        $this->execDir = getcwd() . "/vendor/opencart";
 
         $this->installer = new Installer($this->execDir);
 
@@ -59,7 +59,7 @@ class BackupCommandTest extends \PHPUnit_Framework_TestCase {
         $this->installer->removeConfigFiles();
     }
 
-    public function testBackingUpCatalogImages() {
+    public function testBackingUpCatalogImagesAndDatabase() {
         chdir($this->execDir);
 
         $command = $this->application->find('backup');
