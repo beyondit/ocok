@@ -66,7 +66,7 @@ abstract class OCOKCommand extends Command {
         }
         return $supported;
     }
-            
+
     public function loadOCConfig() {
         require_once 'config.php';
     }

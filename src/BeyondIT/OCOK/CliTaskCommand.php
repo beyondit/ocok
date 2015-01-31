@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-use Monolog\Logger;
 
 class CliTaskCommand extends OCOKCommand {
     
@@ -40,16 +39,18 @@ class CliTaskCommand extends OCOKCommand {
                     }                    
                 }
             }
-            
+
             ob_start();
-            require_once $this->getOCDirectory() . DIRECTORY_SEPARATOR . "index.php";      
+            require_once $this->getOCDirectory() . DIRECTORY_SEPARATOR . "index.php";
             ob_end_clean();
 
-            $registry->set('cli',true);
+            $registry->set('is_cli',true);
+            $this->registry = $registry;
 
             $controller = new \Front($registry);
             $controller->dispatch(new \Action($input->getArgument("route")), new \Action('error/not_found'));
-            
+
+
         }
     }    
 }

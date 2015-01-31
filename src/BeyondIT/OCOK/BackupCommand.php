@@ -36,7 +36,7 @@ class BackupCommand extends OCOKCommand {
             if ($za->open("ocok_backup_" . date("Y_m_d_H_i") . ".zip", \ZipArchive::OVERWRITE)) {
 
                 if (is_dir($this->backup_folder)) {
-                    $$file_system_helper->rmdir($this->backup_folder);
+                    $file_system_helper->rmdir($this->backup_folder);
                 }
 
                 mkdir($this->backup_folder);

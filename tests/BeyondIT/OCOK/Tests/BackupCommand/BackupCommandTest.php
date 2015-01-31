@@ -54,11 +54,15 @@ class BackupCommandTest extends \PHPUnit_Framework_TestCase {
         $this->installer->install($this->options);
     }
 
-    public function testDown() {
+    public function tearDown() {
         $this->installer->removeDatabase($this->options);
         $this->installer->removeConfigFiles();
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testBackingUpCatalogImagesAndDatabase() {
         chdir($this->execDir);
 
