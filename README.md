@@ -1,6 +1,14 @@
 
 [![Build Status](https://travis-ci.org/Beyond-IT/ocok.svg?branch=master)](https://travis-ci.org/Beyond-IT/ocok)
 
+[![Codacy Badge](https://www.codacy.com/project/badge/398b5a2d44f3426a81f494e9cb7e2e00)](https://www.codacy.com/public/stefanhuber/ocok)
+
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Beyond-IT/ocok/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Beyond-IT/ocok/?branch=master)
+
+[![Code Coverage](https://scrutinizer-ci.com/g/Beyond-IT/ocok/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Beyond-IT/ocok/?branch=master)
+
+[![Build Status](https://scrutinizer-ci.com/g/Beyond-IT/ocok/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Beyond-IT/ocok/build-status/master)
+
 # OCOK: OpenCart OK commandline utility
 
 ## Installation
