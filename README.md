@@ -9,6 +9,8 @@
 
 [![Build Status](https://scrutinizer-ci.com/g/Beyond-IT/ocok/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Beyond-IT/ocok/build-status/master)
 
+[![Code Climate](https://codeclimate.com/github/Beyond-IT/ocok/badges/gpa.svg)](https://codeclimate.com/github/Beyond-IT/ocok)
+
 # OCOK: OpenCart OK commandline utility
 
 ## Installation
