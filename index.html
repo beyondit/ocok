@@ -52,6 +52,68 @@
             <pre><code>sudo chmod +x ocok.phar && mv ocok.phar /usr/local/bin/ocok</code></pre>
             <p>Now you can use it just like `ocok` in your terminal.</p>
 
+            <h1><a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Commands (Usage)</h1>
+            
+<h2><a id="command-backup" class="anchor" href="#command-backup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Backup</h2>
+<p>The backup command allows for backing up the images folder and the database, depending on the image (-i) or on the database (-d) option.</p>
+<pre><code>
+ocok backup -i -d
+</code></pre>
+<p>The execution of the above command would create a zip file inside the opencart folder, which would contain an SQL dump and all the images.</p>
+
+<h2><a id="command-clitask" class="anchor" href="#command-clitask" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cli Task</h2>
+<p>The cli task can call controllers through a command line interface (CLI) just as easily as through a web browser. This functionality can be used e.g. to automate tasks with cron jobs or anything else that needs to interface over the command line.</p>
+<p>Getting started is as easy as creating a new controller inside the admin or as well inside the catalog package. When calling the controller's actions via CLI a <code>is_cli</code> variable (set to true) is available. </p>
+<p>The following code snippet shows a controller, which is stored as <code>admin/controller/task/example.php</code>.</p>
+<pre><code>
+class ControllerTaskExample extends Controller {
+    public function index() {
+        if (isset($this->is_cli) && $this->is_cli === true) {
+            // work done by the controller
+
+            if (isset($this->request->get['param1'])) {
+                echo "param1 is " . $this->request->get['param1'] . "\n";
+            }
+
+            if (isset($this->request->get['param2'])) {
+                echo "param2 is " . $this->request->get['param2'] . "\n";
+            }
+
+        }
+    }
+} 
+</code></pre>
+<p>Simply call the <code>ocok run</code> command inside the Opencart folder like so:</p>
+<pre><code>
+ocok run task/example
+</code></pre>
+<p>It is also possible to add parameters to the call, which are set as GET or POST parameters inside the controller.</p>
+<pre><code>
+ocok run task/example param1=foo param2=bar
+</code></pre>
+<p>
+The above stated command would output:<br>
+param1 is foo<br>
+param2 is bar
+</p>
+<p>Additionally, it is possible to run controllers from the catalog package. This requires to add the <code>-c</code> option to the command line call. This of course requires a controller <code>catalog/controller/task/example.php</code> inside the catalog package.</p>
+<pre><code>
+ocok run task/example -c
+</code></pre>
+<p>Another option (-p) is available which allows setting the given parameters as POST parameters.</p>
+<pre><code>
+ocok run task/example -p param1=bar param2=foo
+</code></pre>
+<p>Finally, running OCOK cli tasks as scheduled <a href="http://en.wikipedia.org/wiki/Cron">cron</a> jobs is simple. After adding the following line to a crontab file, the examplary controller would be executed every minute.</p>
+<pre><code>
+* * * * * (cd /path/to/opencart/folder; /path/to/ocok run task/example param1=foo param2=bar)
+</code></pre>
+<h2><a id="command-install" class="anchor" href="#command-install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
+<p>The install command provides a wrapper around the opencart cli_install.php script. Additionally, it can download Opencart if it is not found on the current foler.</p>    
+<p>Running the following command within an empty folder downloads and installs the latest version of Opencart, with the stated database and Opencart configurations.</p>
+<pre><code>
+ocok install -d mysqli -o localhost -u dbuser -p dbpassword -b dbname -x dbprefix -U ocadmin -P ocpass -e example@ocok.com -s http://localhost/opencart/
+</code></pre>
         </section>
 
         <aside id="sidebar">
