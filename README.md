@@ -10,5 +10,8 @@
   * [Composer (global)](http://beyond-it.github.io/ocok/#composer-global)
   * [Composer (local)](http://beyond-it.github.io/ocok/#composer-local)
   * [Phar Package](http://beyond-it.github.io/ocok/#phar)
-* [Commands (Usage)](http://beyond-it.github.io/ocok/#commands)
+* [Commands (Usage)](http://beyond-it.github.io/ocok/#usage)
+  * [Backup Command](http://beyond-it.github.io/ocok/#command-backup)
+  * [Cli Task Command](http://beyond-it.github.io/ocok/#command-clitask)
+  * [Install Command](http://beyond-it.github.io/ocok/#command-install)
 
