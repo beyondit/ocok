@@ -4,7 +4,7 @@
     "require": {
         "symfony/console": "~2.5",
         "ifsnop/mysqldump-php": "~1.4",
-        "codegyre/robo": "0.5.*"
+        "codegyre/robo": "~0.5"
     },
     "autoload": {
       "psr-4": {
