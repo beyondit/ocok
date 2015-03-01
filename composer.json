@@ -14,7 +14,7 @@
     "autoload-dev": {
         "psr-4": { "BeyondIT\\OCOK\\Tests\\": "tests/BeyondIT/OCOK/Tests/" }
     },
-    "version": "0.2.0",
+    "version": "0.2.1",
     "license": "GPL-3.0+",
     "authors": [
         {
