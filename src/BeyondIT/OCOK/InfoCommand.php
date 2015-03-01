@@ -53,6 +53,7 @@ class InfoCommand extends OCOKCommand {
             $version = null;
             $cmds[] = $application->get("install");
             $cmds[] = $application->get("info");
+            $cmds[] = $application->get("help");
         } else {
             $version = $this->getVersion();
             $cmds = $application->all();
