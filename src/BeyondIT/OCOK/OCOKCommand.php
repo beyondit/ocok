@@ -90,6 +90,25 @@ abstract class OCOKCommand extends Command {
         return $output;
     }
 
+    public function loadDatabaseConfig($execDir) {
+        $output = array();
+
+        $handle = fopen($execDir .DIRECTORY_SEPARATOR. $this->files['catalog/config'], "r");
+        if ($handle) {
+            while (($line = fgets($handle)) !== false) {
+                if (($pos1 = strpos($line,"DB_")) > 0) {
+                    $offset = strpos($line,',');
+                    $start = strpos($line,"'",$offset);
+                    $end = strrpos($line,"'",$offset);
+
+                    $output[strtolower(substr($line,$pos1,strpos($line,"'",$pos1)-$pos1))] = substr($line,$start+1,$end-$start-1);
+                }
+            }
+        }
+
+        return $output;
+    }
+
     public function checkUninstalledOC() {
         $execDir = $this->getOCDirectory();
         $output = true;

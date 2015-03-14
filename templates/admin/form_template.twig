@@ -1,0 +1,86 @@
+<?php echo $header; ?><?php echo $column_left; ?>
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-{{ css_identifier }}" data-toggle="tooltip" title="<?php echo $button_save; ?>" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="<?php echo $cancel; ?>" data-toggle="tooltip" title="<?php echo $button_cancel; ?>" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+            <h1><?php echo $heading_title; ?></h1>
+            <ul class="breadcrumb">
+                <?php foreach ($breadcrumbs as $breadcrumb) { ?>
+                <li><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a></li>
+                <?php } ?>
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <?php if ($error_warning) { ?>
+        <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> <?php echo $error_warning; ?>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <?php } ?>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-pencil"></i> <?php echo $text_form; ?></h3>
+            </div>
+            <div class="panel-body">
+                <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-{{ css_identifier }}" class="form-horizontal">
+                {% for att in attributes %}
+                    <div class="form-group{% if att.attribute_required %} required{% endif %}">
+                        <label class="col-sm-2 control-label" for="{{ att.attribute_css_id }}"><?php echo $entry_{{ att.attribute_name }}; ?></label>
+                        <div class="col-sm-10">
+                        {% if att.attribute_type == 'int' or att.attriubte_type == 'decimal' or att.attribute_type == 'varchar' %}
+                            <input id="{{ att.attribute_css_id }}" type="text" name="{{ att.attribute_name }}" value="<?php echo ${{ att.attribute_name }}; ?>" placeholder="<?php echo $entry_{{ att.attribute_name }}; ?>" class="form-control" />
+                        {% elseif att.attribute_type == 'htmltext' %}
+                            <textarea name="{{ att.attribute_name }}" placeholder="<?php echo $entry_{{ att.attribute_name }}; ?>" id="{{ att.attribute_css_id }}" class="form-rich-text"><?php echo ${{ att.attribute_name }}; ?></textarea>
+                        {% elseif att.attribute_type == 'text' %}
+                            <textarea rows="5" name="{{ att.attribute_name }}" placeholder="<?php echo $entry_{{ att.attribute_name }}; ?>" id="{{ att.attribute_css_id }}" class="form-control"><?php echo ${{ att.attribute_name }}; ?></textarea>
+                        {% elseif att.attribute_type == 'boolean' %}
+                            <div class="checkbox">
+                                <label>
+                                    <?php if (${{ att.attribute_name }}) { ?>
+                                    <input type="checkbox" name="{{ att.attribute_name }}" value="1" checked="checked" id="{{ att.attribute_css_id }}" />
+                                    <?php } else { ?>
+                                    <input type="checkbox" name="{{ att.attribute_name }}" value="1" id="{{ att.attribute_css_id }}" />
+                                    <?php } ?>
+                                </label>
+                            </div>
+                        {% elseif att.attribute_type == 'date' %}
+                            <div class="input-group date">
+                                <input type="text" name="{{ att.attribute_name }}" value="<?php echo ${{ att.attribute_name }}; ?>" placeholder="<?php echo $entry_{{ att.attribute_name }}; ?>" data-date-format="YYYY-MM-DD" id="{{ att.attribute_css_id }}" class="form-control" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>
+                                </span>
+                            </div>
+                        {% endif %}
+                        {% if att.attribute_required %}
+                            <?php if (isset($error_{{ att.attribute_name }})) { ?>
+                            <div class="text-danger"><?php echo $error_{{ att.attribute_name }}; ?></div>
+                            <?php } ?>
+                        {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('.form-rich-text').summernote({height: 300});
+</script>
+<script type="text/javascript">
+    $('.date').datetimepicker({
+        pickTime: false
+    });
+
+    $('.time').datetimepicker({
+        pickDate: false
+    });
+
+    $('.datetime').datetimepicker({
+        pickDate: true,
+        pickTime: true
+    });
+</script>
+<?php echo $footer; ?>

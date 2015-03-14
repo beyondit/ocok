@@ -73,6 +73,20 @@ class CliTaskCommandTest extends \PHPUnit_Framework_TestCase {
         $this->installer->removeConfigFiles();
     }
 
+    public function testDBConfigExtraction() {
+        chdir($this->execDir);
+        $command = $this->application->find('run');
+
+        $config = $command->loadDatabaseConfig($this->execDir);
+
+        $this->assertEquals("localhost",$config["db_hostname"]);
+        $this->assertEquals("root",$config["db_username"]);
+        $this->assertEquals("root",$config["db_password"]);
+        $this->assertEquals("ocok_opencart_test",$config["db_database"]);
+        $this->assertEquals("oc_",$config["db_prefix"]);
+        $this->assertEquals("mysqli",$config["db_driver"]);
+    }
+
     public function testTestCommandExecution() {
         chdir($this->execDir);
         $command = $this->application->find('run');

@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS `{{ db_prefix }}{{ identifier }}`;
+CREATE TABLE IF NOT EXISTS `{{ db_prefix }}{{ identifier }}` (
+  `{{ identifier }}_id` int(11) NOT NULL AUTO_INCREMENT,
+  {% for att in attributes %}
+  `{{ att.attribute_name }}` {% if att.attribute_type == 'int' %}int(11){% elseif att.attribute_type == 'varchar' %}varchar({{ att.attribute_max_size }}){% elseif att.attribute_type == 'text' or att.attribute_type == 'htmltext' %}text{% elseif att.attribute_type == 'decimal' %}decimal(15,4){% elseif att.attribute_type == 'boolean' %}tinyint(1){% elseif att.attribute_type == 'date' %}datetime{% endif %} NOT NULL,
+  {% endfor %}
+  PRIMARY KEY (`{{ identifier }}_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

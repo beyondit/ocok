@@ -19,6 +19,7 @@ use BeyondIT\OCOK\CliTaskCommand;
 use BeyondIT\OCOK\InfoCommand;
 use BeyondIT\OCOK\InstallCommand;
 use BeyondIT\OCOK\BackupCommand;
+use BeyondIT\OCOK\GeneratorCommand;
 use BeyondIT\OCOK\Helpers\DummyConfig;
 use Symfony\Component\Console\Application;
 
@@ -32,7 +33,9 @@ $application->add(new PHPDocCommand);
 $application->add(new CliTaskCommand);
 $application->add(new InstallCommand);
 $application->add(new BackupCommand);
+$application->add(new GeneratorCommand);
 $application->add(new InfoCommand);
+
 
 $application->setDefaultCommand('info');
 $application->run();

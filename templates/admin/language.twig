@@ -1,0 +1,32 @@
+<?php
+
+// Heading
+$_['heading_title'] = '{{ title_uc }}';
+
+// Text
+$_['text_success']      = 'Success: You have modified {{ title_lc }}s!';
+$_['text_list']         = '{{ title_uc }} List';
+$_['text_add']          = 'Add {{ title_uc }}';
+$_['text_edit']         = 'Edit {{ title_uc }}';
+
+// Column
+{% for att in attributes if att.attribute_list %}
+$_['column_{{ att.attribute_name }}'] = '{{ att.attribute_title }}';
+{% endfor %}
+$_['column_action']     = 'Action';
+
+// Entry
+{% for att in attributes %}
+$_['entry_{{ att.attribute_name }}'] = '{{ att.attribute_title }}';
+{% endfor %}
+
+// Error
+$_['error_permission']  = 'Warning: You do not have permission to modify {{ title_lc }}s!';
+$_['error_warning'] = 'Warning: Please check the form carefully for errors!';
+{% for att in attributes if att.attribute_required %}
+{% if att.attribute_type == 'varchar' %}
+$_['error_{{ att.attribute_name }}'] = '{{ att.attribute_title }} must be greater than {{ att.attribute_min_size }} and less than {{ att.attribute_max_size }} characters!';
+{% else %}
+$_['error_{{ att.attribute_name }}'] = '{{ att.attribute_title }} is required!';
+{% endif %}
+{% endfor %}

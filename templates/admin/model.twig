@@ -1,0 +1,51 @@
+<?php
+
+class {{ model }} extends Model {
+
+    public function add{{ name }} ($data) {
+        $this->db->query("INSERT INTO " . DB_PREFIX . "{{ identifier }} SET " . {{ include('admin/sql_attributes.twig') }});
+
+        ${{ identifier }}_id = $this->db->getLastId();
+
+        return ${{ identifier }}_id;
+    }
+
+    public function edit{{ name }} (${{ identifier }}_id, $data) {
+        $this->db->query("UPDATE " . DB_PREFIX . "{{ identifier }} SET " .  {{ include('admin/sql_attributes.twig') }});
+    }
+
+    public function delete{{ name }} (${{ identifier }}_id) {
+        $this->db->query("DELETE FROM " . DB_PREFIX . "{{ identifier }} WHERE {{ identifier }}_id = '" . (int)${{ identifier }}_id . "'");
+    }
+
+    public function get{{ name }} (${{ identifier }}_id) {
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "{{ identifier }} WHERE {{ identifier }}_id = '" . (int)${{ identifier }}_id . "'");
+        return $query->row;
+    }
+
+    public function get{{ name }}s ($data = array()) {
+        $sql = "SELECT * FROM " . DB_PREFIX . "{{ identifier }} ";
+
+        if (isset($data['start']) || isset($data['limit'])) {
+            if ($data['start'] < 0) {
+                $data['start'] = 0;
+            }
+
+            if ($data['limit'] < 1) {
+                $data['limit'] = 20;
+            }
+
+            $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+        }
+
+        $query = $this->db->query($sql);
+
+        return $query->rows;
+    }
+
+    public function getTotal{{ name }}s ($data = array()) {
+        $query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "{{ identifier }}");
+        return $query->row['total'];
+    }
+
+}

@@ -1,0 +1,3 @@
+{% for att in attributes %}
+    "{% if not loop.first %}, {% endif %}{{ att.attribute_name }} = '" . {% if att.attribute_type in ['integer','boolean'] %}(int) $data['{{ att.attribute_name }}']{% elseif att.attribute_type in ['decimal'] %}(float) $data['{{ att.attribute_name }}']{% else %}$this->db->escape($data['{{ att.attribute_name }}']){% endif %} . "'"{% if not loop.last %} .{% endif %}
+{% endfor %}
