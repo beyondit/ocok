@@ -112,6 +112,8 @@ class {{ controller }} extends Controller {
     }
 
     protected function getList() {
+        $data['token'] = $this->session->data['token'];
+
         if (isset($this->request->get['sort'])) {
             $sort = $this->request->get['sort'];
         } else {
@@ -148,12 +150,16 @@ class {{ controller }} extends Controller {
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL')
+            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL'){% if version1 %},
+            'separator' => false
+            {% endif %}
         );
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('{{ path }}', 'token=' . $this->session->data['token'] . $url, 'SSL')
+            'href' => $this->url->link('{{ path }}', 'token=' . $this->session->data['token'] . $url, 'SSL'){% if version1 %},
+                'separator' => ' :: '
+            {% endif %}
         );
 
         $data['add'] = $this->url->link('{{ path }}/add', 'token=' . $this->session->data['token'] . $url, 'SSL');
@@ -193,7 +199,11 @@ class {{ controller }} extends Controller {
         {% endfor %}
         $data['column_action'] = $this->language->get('column_action');
 
+        {% if version1 %}
+        $data['button_add'] = $this->language->get('button_insert');
+        {% else %}
         $data['button_add'] = $this->language->get('button_add');
+        {% endif %}
         $data['button_edit'] = $this->language->get('button_edit');
         $data['button_delete'] = $this->language->get('button_delete');
 
@@ -249,21 +259,32 @@ class {{ controller }} extends Controller {
         $pagination->url = $this->url->link('{{ path }}', 'token=' . $this->session->data['token'] . $url . '&page={page}', 'SSL');
 
         $data['pagination'] = $pagination->render();
-
+        {% if not version1 %}
         $data['results'] = sprintf($this->language->get('text_pagination'), (${{ identifier }}_total) ? (($page - 1) * $this->config->get('config_limit_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_limit_admin')) > (${{ identifier }}_total - $this->config->get('config_limit_admin'))) ? ${{ identifier }}_total : ((($page - 1) * $this->config->get('config_limit_admin')) + $this->config->get('config_limit_admin')), ${{ identifier }}_total, ceil(${{ identifier }}_total / $this->config->get('config_limit_admin')));
-
+        {% endif %}
         $data['sort'] = $sort;
         $data['order'] = $order;
 
+        {% if version1 %}
+        $this->data = $data;
+        $this->template = '{{ path }}_list.tpl';
+        $this->children = array(
+            'common/header',
+            'common/footer'
+        );
+        $this->response->setOutput($this->render());
+        {% else %}
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['footer'] = $this->load->controller('common/footer');
-
         $this->response->setOutput($this->load->view('{{ path }}_list.tpl', $data));
+        {% endif %}
+
     }
 
     protected function getForm() {
         $data['heading_title'] = $this->language->get('heading_title');
+        $data['token'] = $this->session->data['token'];
 
         $data['text_form'] = !isset($this->request->get['{{ identifier }}_id']) ? $this->language->get('text_add') : $this->language->get('text_edit');
 
@@ -304,12 +325,16 @@ class {{ controller }} extends Controller {
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL')
+            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL'){% if version1 %},
+                'separator' => false
+            {% endif %}
         );
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('{{ path }}', 'token=' . $this->session->data['token'] . $url, 'SSL')
+            'href' => $this->url->link('{{ path }}', 'token=' . $this->session->data['token'] . $url, 'SSL'){% if version1 %},
+                'separator' => ' :: '
+            {% endif %}
         );
 
         if (!isset($this->request->get['{{ identifier }}_id'])) {
@@ -334,11 +359,20 @@ class {{ controller }} extends Controller {
         }
         {% endfor %}
 
+        {% if version1 %}
+        $this->data = $data;
+        $this->template = '{{ path }}_form.tpl';
+        $this->children = array(
+            'common/header',
+            'common/footer'
+        );
+        $this->response->setOutput($this->render());
+        {% else %}
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['footer'] = $this->load->controller('common/footer');
-
         $this->response->setOutput($this->load->view('{{ path }}_form.tpl', $data));
+        {% endif %}
     }
 
     protected function validateForm() {

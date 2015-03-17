@@ -1,0 +1,68 @@
+<?php echo $header; ?>
+<div id="content">
+    <div class="breadcrumb">
+        <?php foreach ($breadcrumbs as $breadcrumb) { ?>
+        <?php echo $breadcrumb['separator']; ?><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a>
+        <?php } ?>
+    </div>
+    <?php if ($error_warning) { ?>
+    <div class="warning"><?php echo $error_warning; ?></div>
+    <?php } ?>
+    <?php if ($success) { ?>
+    <div class="success"><?php echo $success; ?></div>
+    <?php } ?>
+    <div class="box">
+        <div class="heading">
+            <h1><img src="view/image/order.png" alt="" /> <?php echo $heading_title; ?></h1>
+            <div class="buttons">
+                <a title="<?php echo $button_add; ?>" href="<?php echo $add; ?>" class="button"><?php echo $button_add; ?></a>
+                <a title="<?php echo $button_delete; ?>" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-{{ css_identifier }}').submit() : false;" class="button"><?php echo $button_delete; ?></a>
+            </div>
+        </div>
+        <div class="content">
+            <form action="<?php echo $delete; ?>" method="post" enctype="multipart/form-data" id="form">
+                <table class="list">
+                    <thead>
+                    <tr>
+                        <td width="1" style="text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></td>
+                        {% for att in attributes if att.attribute_list %}
+                            <td class="left"><?php if ($sort == '{{ att.attribute_name }}') { ?>
+                                <a href="<?php echo $sort_{{ att.attribute_name }}; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_{{ att.attribute_name }}; ?></a>
+                                <?php } else { ?>
+                                <a href="<?php echo $sort_{{ att.attribute_name }}; ?>"><?php echo $column_{{ att.attribute_name }}; ?></a>
+                                <?php } ?>
+                            </td>
+                        {% endfor %}
+                        <td class="text-right"><?php echo $column_action; ?></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <?php if (${{ identifier }}s) { ?>
+                    <?php foreach (${{ identifier }}s as ${{ identifier }}) { ?>
+                    <tr>
+                        <td class="center"><?php if (in_array(${{ identifier }}['{{ identifier }}_id'], $selected)) { ?>
+                            <input type="checkbox" name="selected[]" value="<?php echo ${{ identifier }}['{{ identifier }}_id']; ?>" checked="checked" />
+                            <?php } else { ?>
+                            <input type="checkbox" name="selected[]" value="<?php echo ${{ identifier }}['{{ identifier }}_id']; ?>" />
+                            <?php } ?>
+                        </td>
+                        {% for att in attributes if att.attribute_list %}
+                            <td class="left"><?php echo ${{ identifier }}['{{ att.attribute_name }}']; ?></td>
+                        {% endfor %}
+                        <td class="right">[ <a href="<?php echo ${{ identifier }}['edit']; ?>" title="<?php echo $button_edit; ?>" class="btn btn-primary"><?php echo $button_edit; ?></a> ]</td>
+                    </tr>
+                    <?php } ?>
+                    <?php } else { ?>
+                    <tr>
+                        <td class="text-center" colspan="{{ attributes|length + 2}}"><?php echo $text_no_results; ?></td>
+                    </tr>
+                    <?php } ?>
+                    </tbody>
+                </table>
+            </form>
+            <div class="pagination"><?php echo $pagination; ?></div>
+        </div>
+    </div>
+</div>
+<?php echo $footer; ?>

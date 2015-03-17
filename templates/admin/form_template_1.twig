@@ -1,0 +1,78 @@
+<?php echo $header; ?>
+<div id="content">
+    <div class="breadcrumb">
+        <?php foreach ($breadcrumbs as $breadcrumb) { ?>
+        <?php echo $breadcrumb['separator']; ?><a href="<?php echo $breadcrumb['href']; ?>"><?php echo $breadcrumb['text']; ?></a>
+        <?php } ?>
+    </div>
+    <?php if ($error_warning) { ?>
+    <div class="warning"><?php echo $error_warning; ?></div>
+    <?php } ?>
+    <div class="box">
+        <div class="heading">
+            <h1><img src="view/image/order.png" alt="" /> <?php echo $heading_title; ?></h1>
+            <div class="buttons">
+                <a onclick="$('#form-{{ css_identifier }}').submit();" class="button"><?php echo $button_save; ?></a>
+                <a href="<?php echo $cancel; ?>" class="button"><?php echo $button_cancel; ?></a>
+            </div>
+        </div>
+        <div class="content">
+            <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-{{ css_identifier }}">
+                <table class="form">
+                    {% for att in attributes %}
+                        <tr>
+                            <td>{% if att.attribute_required %}<span class="required">*</span>{% endif %} <?php echo $entry_{{ att.attribute_name }}; ?></td>
+                            <td>
+                                {% if att.attribute_type == 'int' or att.attriubte_type == 'decimal' or att.attribute_type == 'varchar' %}
+                                    <input id="{{ att.attribute_css_id }}" type="text" name="{{ att.attribute_name }}" value="<?php echo ${{ att.attribute_name }}; ?>" placeholder="<?php echo $entry_{{ att.attribute_name }}; ?>" />
+                                {% elseif att.attribute_type == 'htmltext' %}
+                                    <textarea name="{{ att.attribute_name }}" placeholder="<?php echo $entry_{{ att.attribute_name }}; ?>" id="{{ att.attribute_css_id }}" class="form-rich-text"><?php echo ${{ att.attribute_name }}; ?></textarea>
+                                {% elseif att.attribute_type == 'text' %}
+                                    <textarea rows="5" name="{{ att.attribute_name }}" placeholder="<?php echo $entry_{{ att.attribute_name }}; ?>" id="{{ att.attribute_css_id }}"><?php echo ${{ att.attribute_name }}; ?></textarea>
+                                {% elseif att.attribute_type == 'boolean' %}
+                                    <div class="checkbox">
+                                        <label>
+                                            <?php if (${{ att.attribute_name }}) { ?>
+                                            <input type="checkbox" name="{{ att.attribute_name }}" value="1" checked="checked" id="{{ att.attribute_css_id }}" />
+                                            <?php } else { ?>
+                                            <input type="checkbox" name="{{ att.attribute_name }}" value="1" id="{{ att.attribute_css_id }}" />
+                                            <?php } ?>
+                                        </label>
+                                    </div>
+                                {% elseif att.attribute_type == 'date' %}
+                                    <input type="text" name="{{ att.attribute_name }}" value="<?php echo ${{ att.attribute_name }}; ?>" placeholder="<?php echo $entry_{{ att.attribute_name }}; ?>" id="{{ att.attribute_css_id }}" class="date" />
+                                {% endif %}
+                                {% if att.attribute_required %}
+                                    <?php if (isset($error_{{ att.attribute_name }})) { ?>
+                                    <span class="error"><?php echo $error_{{ att.attribute_name }}; ?></span>
+                                    <?php } ?>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="view/javascript/ckeditor/ckeditor.js"></script>
+<script type="text/javascript">
+    CKEDITOR.replaceAll('form-rich-text', {
+        filebrowserBrowseUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
+        filebrowserImageBrowseUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
+        filebrowserFlashBrowseUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
+        filebrowserUploadUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
+        filebrowserImageUploadUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
+        filebrowserFlashUploadUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>'
+    });
+</script>
+<script type="text/javascript" src="view/javascript/jquery/ui/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript">
+    $('.date').datepicker({dateFormat: 'yy-mm-dd'});
+    $('.datetime').datetimepicker({
+        dateFormat: 'yy-mm-dd',
+        timeFormat: 'h:m'
+    });
+    $('.time').timepicker({timeFormat: 'h:m'});
+</script>
+<?php echo $footer; ?>

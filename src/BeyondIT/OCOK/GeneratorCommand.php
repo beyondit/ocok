@@ -44,7 +44,8 @@ class GeneratorCommand extends OCOKCommand {
             'base_name' => $names[0] ,
             'path' => $path ,
             'title_uc' => ucwords(str_replace('_',' ',$names[1])) ,
-            'title_lc' => str_replace('_',' ',$names[1])
+            'title_lc' => str_replace('_',' ',$names[1]) ,
+            'version1' => $this->isVersion("1")
         );
     }
 
@@ -65,103 +66,119 @@ class GeneratorCommand extends OCOKCommand {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $loader = new \Twig_Loader_Filesystem($this->getTemplatePath());
-        $twig   = new \Twig_Environment($loader,array());
+        if (parent::execute($input, $output)) {
+            $loader = new \Twig_Loader_Filesystem($this->getTemplatePath());
+            $twig = new \Twig_Environment($loader, array());
 
-        $path = strtolower($input->getArgument("path"));
-        $data = $this->getConfigVars($path);
+            $path = strtolower($input->getArgument("path"));
+            $data = $this->getConfigVars($path);
 
-        $helper = $this->getHelper('question');
+            $helper = $this->getHelper('question');
 
-        while (true) {
-            $min_size = $max_size = -1;
-            $ask_required = true;
+            while (true) {
+                $min_size = $max_size = -1;
+                $ask_required = true;
 
-            $question1  = new Question('Add the name of the model attribute (end with empty answer): ','');
-            $attribute_name = strtolower($helper->ask($input, $output, $question1));
-            if (empty($attribute_name)) {break;}
-            $attribute_title = ucwords(str_replace('_',' ',$attribute_name));
+                $question1 = new Question('Add the name of the model attribute (end with empty answer): ', '');
+                $attribute_name = strtolower($helper->ask($input, $output, $question1));
+                if (empty($attribute_name)) {
+                    break;
+                }
+                $attribute_title = ucwords(str_replace('_', ' ', $attribute_name));
 
-            $question2 = new ChoiceQuestion(
-                'Set the type of the model attribute: ',
-                array('integer', 'varchar', 'text', 'htmltext', 'boolean', 'date', 'decimal'),
-                0);
-            $attribute_type = $helper->ask($input, $output, $question2);
+                $question2 = new ChoiceQuestion(
+                    'Set the type of the model attribute: ',
+                    array('integer', 'varchar', 'text', 'htmltext', 'boolean', 'date', 'decimal'),
+                    0);
+                $attribute_type = $helper->ask($input, $output, $question2);
 
-            if($attribute_type === 'boolean') {
-                $ask_required = false;
-                $attribute_required = false;
-            }
-
-            if ($attribute_type === 'varchar') {
-                $q_min = new Question('Set min size of varchar input (0-255): ',0);
-                $min_size = $helper->ask($input, $output, $q_min);
-                if ($min_size < 0 || $min_size > 255) {$min_size = 0;}
-
-                $q_max = new Question('Set max size of varchar input (0-255): ',255);
-                $max_size = $helper->ask($input, $output, $q_max);
-                if ($max_size < 0 || $max_size > 255) {$max_size = 255;}
-
-                if ($min_size > 0) {
+                if ($attribute_type === 'boolean') {
                     $ask_required = false;
-                    $attribute_required = true;
+                    $attribute_required = false;
                 }
-            }
 
-            $selection = array("yes","no");
-            $question3  = new Question('Should the attribute be displayed in the List (yes/no):','no');
-            $question3->setAutocompleterValues($selection);
-            $attribute_list = $helper->ask($input, $output, $question3) === 'yes' ? true : false;
+                if ($attribute_type === 'varchar') {
+                    $q_min = new Question('Set min size of varchar input (0-255): ', 0);
+                    $min_size = $helper->ask($input, $output, $q_min);
+                    if ($min_size < 0 || $min_size > 255) {
+                        $min_size = 0;
+                    }
 
-            if ($attribute_list) {
-                $question4  = new Question('Should the attribute be the default sorting for the List (yes/no): ','no');
-                $question4->setAutocompleterValues($selection);
-                if ($helper->ask($input, $output, $question4) === 'yes') {
-                    $data['default_sort'] = $attribute_name;
+                    $q_max = new Question('Set max size of varchar input (0-255): ', 255);
+                    $max_size = $helper->ask($input, $output, $q_max);
+                    if ($max_size < 0 || $max_size > 255) {
+                        $max_size = 255;
+                    }
+
+                    if ($min_size > 0) {
+                        $ask_required = false;
+                        $attribute_required = true;
+                    }
                 }
+
+                $selection = array("yes", "no");
+                $question3 = new Question('Should the attribute be displayed in the List (yes/no):', 'no');
+                $question3->setAutocompleterValues($selection);
+                $attribute_list = $helper->ask($input, $output, $question3) === 'yes' ? true : false;
+
+                if ($attribute_list) {
+                    $question4 = new Question('Should the attribute be the default sorting for the List (yes/no): ', 'no');
+                    $question4->setAutocompleterValues($selection);
+                    if ($helper->ask($input, $output, $question4) === 'yes') {
+                        $data['default_sort'] = $attribute_name;
+                    }
+                }
+
+                if ($ask_required) {
+                    $question5 = new Question('Should the attribute be required (yes/no):', 'no');
+                    $question5->setAutocompleterValues($selection);
+                    $attribute_required = $helper->ask($input, $output, $question5) === 'yes' ? true : false;
+                }
+
+                $attribute_definition = array(
+                    'attribute_name' => $attribute_name,
+                    'attribute_css_id' => 'input-' . str_replace("_", "-", $attribute_name),
+                    'attribute_type' => $attribute_type,
+                    'attribute_list' => $attribute_list,
+                    'attribute_title' => $attribute_title,
+                    'attribute_required' => isset($attribute_required) ? $attribute_required : false
+                );
+
+                if ($min_size >= 0 && $max_size > 0) {
+                    $attribute_definition['attribute_min_size'] = $min_size;
+                    $attribute_definition['attribute_max_size'] = $max_size;
+                }
+
+                $data['attributes'][] = $attribute_definition;
             }
 
-            if ($ask_required) {
-                $question5 = new Question('Should the attribute be required (yes/no):', 'no');
-                $question5->setAutocompleterValues($selection);
-                $attribute_required = $helper->ask($input, $output, $question5) === 'yes' ? true : false;
+            $base_dir = $this->getOCDirectory() . DIRECTORY_SEPARATOR . "admin" . DIRECTORY_SEPARATOR;
+            $controller_dir = $base_dir . "controller" . DIRECTORY_SEPARATOR . $data['base_name'];
+            $model_dir = $base_dir . "model" . DIRECTORY_SEPARATOR . $data['base_name'];
+            $language_dir = $base_dir . "language" . DIRECTORY_SEPARATOR . "english" . DIRECTORY_SEPARATOR . $data['base_name'];
+            $template_dir = $base_dir . "view" . DIRECTORY_SEPARATOR . "template" . DIRECTORY_SEPARATOR . $data['base_name'];
+
+            //create all the dirs, if they don't exists yet
+            @mkdir($controller_dir, 0755, true);
+            @mkdir($model_dir, 0755, true);
+            @mkdir($language_dir, 0755, true);
+            @mkdir($template_dir, 0755, true);
+
+            file_put_contents($base_dir . "controller" . DIRECTORY_SEPARATOR . $path . ".php", $twig->render('admin/controller.twig', $data));
+            file_put_contents($base_dir . "model" . DIRECTORY_SEPARATOR . $path . ".php", $twig->render('admin/model.twig', $data));
+            file_put_contents($base_dir . "language" . DIRECTORY_SEPARATOR . "english" . DIRECTORY_SEPARATOR . $path . ".php", $twig->render('admin/language.twig', $data));
+
+            if ($this->isVersion("1")) {
+                file_put_contents($base_dir . "view" . DIRECTORY_SEPARATOR . "template" . DIRECTORY_SEPARATOR . $path . "_list.tpl", $twig->render('admin/list_template_1.twig', $data));
+                file_put_contents($base_dir . "view" . DIRECTORY_SEPARATOR . "template" . DIRECTORY_SEPARATOR . $path . "_form.tpl", $twig->render('admin/form_template_1.twig', $data));
+            } else {
+                file_put_contents($base_dir . "view" . DIRECTORY_SEPARATOR . "template" . DIRECTORY_SEPARATOR . $path . "_list.tpl", $twig->render('admin/list_template.twig', $data));
+                file_put_contents($base_dir . "view" . DIRECTORY_SEPARATOR . "template" . DIRECTORY_SEPARATOR . $path . "_form.tpl", $twig->render('admin/form_template.twig', $data));
             }
 
-            $attribute_definition = array(
-                'attribute_name'  => $attribute_name ,
-                'attribute_css_id' => 'input-' . str_replace("_","-",$attribute_name) ,
-                'attribute_type'  => $attribute_type ,
-                'attribute_list'  => $attribute_list ,
-                'attribute_title' => $attribute_title,
-                'attribute_required' => isset($attribute_required) ? $attribute_required : false
-            );
 
-            if ($min_size >= 0 && $max_size > 0) {
-                $attribute_definition['attribute_min_size'] = $min_size;
-                $attribute_definition['attribute_max_size'] = $max_size;
-            }
 
-            $data['attributes'][] = $attribute_definition;
+            $this->executeSql($twig->render('admin/base_table.twig', array_merge($data, $this->loadDatabaseConfig($this->getOCDirectory()))));
         }
-
-        $base_dir = $this->getOCDirectory() . DIRECTORY_SEPARATOR . "admin" . DIRECTORY_SEPARATOR;
-        $controller_dir = $base_dir . "controller" . DIRECTORY_SEPARATOR . $data['base_name'];
-        $model_dir      = $base_dir . "model" . DIRECTORY_SEPARATOR . $data['base_name'];
-        $language_dir   = $base_dir . "language" . DIRECTORY_SEPARATOR . "english" . DIRECTORY_SEPARATOR . $data['base_name'];
-        $template_dir   = $base_dir . "view" . DIRECTORY_SEPARATOR . "template" . DIRECTORY_SEPARATOR . $data['base_name'];
-
-        //create all the dirs, if they don't exists yet
-        @mkdir($controller_dir,0755,true);
-        @mkdir($model_dir,0755,true);
-        @mkdir($language_dir,0755,true);
-        @mkdir($template_dir,0755,true);
-
-        file_put_contents($base_dir . "controller" . DIRECTORY_SEPARATOR . $path . ".php", $twig->render('admin/controller.twig',$data));
-        file_put_contents($base_dir . "model" . DIRECTORY_SEPARATOR . $path . ".php", $twig->render('admin/model.twig',$data));
-        file_put_contents($base_dir . "view" . DIRECTORY_SEPARATOR . "template" . DIRECTORY_SEPARATOR . $path . "_list.tpl", $twig->render('admin/list_template.twig',$data));
-        file_put_contents($base_dir . "view" . DIRECTORY_SEPARATOR . "template" . DIRECTORY_SEPARATOR . $path . "_form.tpl", $twig->render('admin/form_template.twig',$data));
-        file_put_contents($base_dir . "language" . DIRECTORY_SEPARATOR . "english" . DIRECTORY_SEPARATOR . $path . ".php", $twig->render('admin/language.twig',$data));
-
-        $this->executeSql($twig->render('admin/base_table.twig',array_merge($data,$this->loadDatabaseConfig($this->getOCDirectory()))));
     }
 }
