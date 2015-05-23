@@ -6,12 +6,12 @@
 
 # OCOK: OpenCart OK commandline utility
 
-* [Installation](http://beyond-it.github.io/ocok/#installation)
-  * [Composer (global)](http://beyond-it.github.io/ocok/#composer-global)
-  * [Composer (local)](http://beyond-it.github.io/ocok/#composer-local)
-  * [Phar Package](http://beyond-it.github.io/ocok/#phar)
-* [Commands (Usage)](http://beyond-it.github.io/ocok/#usage)
-  * [Backup Command](http://beyond-it.github.io/ocok/#command-backup)
-  * [Cli Task Command](http://beyond-it.github.io/ocok/#command-clitask)
-  * [Install Command](http://beyond-it.github.io/ocok/#command-install)
+* [Installation](http://beyondit.github.io/ocok/#installation)
+  * [Composer (global)](http://beyondit.github.io/ocok/#composer-global)
+  * [Composer (local)](http://beyondit.github.io/ocok/#composer-local)
+  * [Phar Package](http://beyondit.github.io/ocok/#phar)
+* [Commands (Usage)](http://beyondit.github.io/ocok/#usage)
+  * [Backup Command](http://beyondit.github.io/ocok/#command-backup)
+  * [Cli Task Command](http://beyondit.github.io/ocok/#command-clitask)
+  * [Install Command](http://beyondit.github.io/ocok/#command-install)
 
