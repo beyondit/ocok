@@ -8,11 +8,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class CliTaskCommand extends OCOKCommand {
-    
+
     public function supportedVersions() {
         return array('2','1.5');
     }
-    
+
     protected function configure() {
         $this->setName("run")
              ->setDescription("Run OpenCart controllers as tasks from commandline")
@@ -21,14 +21,14 @@ class CliTaskCommand extends OCOKCommand {
              ->addArgument("route", InputArgument::REQUIRED, "Set the route for the Task Controller")
              ->addArgument("args", InputArgument::IS_ARRAY, "Custom arguments, which are set as GET or POST (-p option) parameters for the controller script. Added as key/value pairs (e.g. key=value)");
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output) {
         if (parent::execute($input, $output)) {
-                            
+
             if (!$input->getOption("catalog")) {
-                chdir('admin');  
+                chdir('admin');
             }
-                                    
+
             foreach ($input->getArgument("args") as $arg) {
                 $pair = explode("=", $arg);
                 if (count($pair) === 2) {
@@ -36,9 +36,11 @@ class CliTaskCommand extends OCOKCommand {
                         $_POST[$pair[0]] = $pair[1];
                     } else {
                         $_GET[$pair[0]] = $pair[1];
-                    }                    
+                    }
                 }
             }
+
+            $_SERVER['REQUEST_URI'] = '/';
 
             ob_start();
             require_once $this->getOCDirectory() . DIRECTORY_SEPARATOR . "index.php";
@@ -52,5 +54,5 @@ class CliTaskCommand extends OCOKCommand {
 
 
         }
-    }    
+    }
 }
